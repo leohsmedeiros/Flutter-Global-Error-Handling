@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:global_error_handling/home_page.dart';
+import 'package:global_error_handling/report_error.dart';
 
 void main() async {
-
   runZonedGuarded<Future>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
@@ -23,8 +23,9 @@ void main() async {
 
     runApp(MyApp());
   }, (error, stackTrace) {
-    debugPrint("=================== CAUGHT runZonedGuarded ERROR ===================");
-    FlutterError.reportError(FlutterErrorDetails(exception: error, stack: stackTrace));
+    debugPrint(
+        "=================== CAUGHT runZonedGuarded ERROR ===================");
+    ReportError.report(error: error, stack: stackTrace);
     debugPrint("=========================================================");
   });
 }
