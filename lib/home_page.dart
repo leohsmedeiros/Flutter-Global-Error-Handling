@@ -9,16 +9,26 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String textContent = '';
 
+  _metodoComErro() {
+    throw ('teste de erro em método');
+  }
+
+  Future<String> _longFunction() async {
+    await Future.delayed(Duration(seconds: 10), () {});
+    return "Value";
+  }
+
+  Future<String> _errorOnFutureFunction() async {
+    var teste;
+    return Future.value(teste.message());
+  }
+
+
   @override
   Widget build(BuildContext context) {
     EdgeInsets paddingEdges =
         const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 20.0, right: 20.0);
-
-    Future<String> longFunction() async {
-      await Future.delayed(Duration(seconds: 10), () {});
-      return "Value";
-    }
-
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Centralização de erros'),
@@ -29,28 +39,6 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             Text(textContent),
             Container(padding: paddingEdges, child: Text('Forçar erros: ')),
-            Container(
-              padding: paddingEdges,
-              width: double.infinity,
-              child: RaisedButton(
-                  child: Text('Pure Dart error (sem try catch)'),
-                  onPressed: () async {
-                    await longFunction().timeout(Duration(seconds: 1));
-                  }),
-            ),
-            Container(
-              padding: paddingEdges,
-              width: double.infinity,
-              child: RaisedButton(
-                  child: Text('Pure Dart error (com try catch)'),
-                  onPressed: () async {
-                    try {
-                      await longFunction().timeout(Duration(seconds: 1));
-                    } catch(e, stackTrace) {
-                      ReportError.report(error: e, stack: stackTrace);
-                    }
-                  }),
-            ),
             Container(
               padding: paddingEdges,
               width: double.infinity,
@@ -136,6 +124,33 @@ class _HomePageState extends State<HomePage> {
               padding: paddingEdges,
               width: double.infinity,
               child: RaisedButton(
+                  child: Text('Timeout (Pure Dart error)'),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                      side: BorderSide(color: Colors.red)
+                  ),
+                  onPressed: () async {
+                    await _longFunction().timeout(Duration(seconds: 1));
+                  }),
+            ),
+            Container(
+              padding: paddingEdges,
+              width: double.infinity,
+              child: RaisedButton(
+                  child: Text('Future with then (Pure Dart error)'),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(0),
+                      side: BorderSide(color: Colors.red)
+                  ),
+                  onPressed: () async {
+                    _errorOnFutureFunction()
+                        .then((value) => print('sucesso'));
+                  }),
+            ),
+            Container(
+              padding: paddingEdges,
+              width: double.infinity,
+              child: RaisedButton(
                   color: Colors.redAccent,
                   child: Text('Fatal Error'),
                   onPressed: () => setState(() => textContent = null)),
@@ -144,9 +159,5 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  _metodoComErro() {
-    throw ('teste de erro em método');
   }
 }
