@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:global_error_handling/home_page.dart';
 import 'package:global_error_handling/report_error.dart';
+import 'package:global_error_handling/server.dart';
 
 void main() async {
   runZonedGuarded<Future>(() async {
@@ -19,6 +20,8 @@ void main() async {
       debugPrint("Error :  ${details.exception}");
       debugPrintStack(stackTrace: details.stack, label: "StackTrace : ");
       debugPrint("=========================================================");
+
+      Server.sendLogger(details);
     };
 
     runApp(MyApp());
